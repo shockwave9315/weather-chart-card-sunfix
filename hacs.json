@@ -1,7 +1,5 @@
-﻿{
-    "name":  "Weather Chart Card Sunfix",
-    "render_readme":  true,
-    "content_in_root":  true,
-    "filename":  "weather-chart-card.js",
-    "version":  "v0.0.6"
+{
+  "name": "Weather Chart Card Sunfix",
+  "render_readme": true,
+  "filename": "weather-chart-card.js"
 }
