@@ -1,8 +1,7 @@
-﻿@'
 {
   "name": "Weather Chart Card Sunfix",
   "render_readme": true,
   "content_in_root": true,
-  "filename": "weather-chart-card.js"
+  "filename": "weather-chart-card.js",
+  "version": "v0.0.4"
 }
-'@ | Out-File -Encoding utf8 -NoNewline .\hacs.json
