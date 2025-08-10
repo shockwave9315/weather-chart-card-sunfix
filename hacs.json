@@ -1,7 +1,7 @@
 ﻿{
-    "name":  "Weather Chart Card (sunrise/sunset override)",
-    "filename":  "dist/weather-chart-card.js",
-    "content_in_root":  false,
+    "name":  "Weather Chart Card Sunfix",
     "render_readme":  true,
-    "version":  "v0.0.2"
+    "content_in_root":  false,
+    "filename":  "dist/weather-chart-card.js",
+    "version":  "v0.0.3"
 }
