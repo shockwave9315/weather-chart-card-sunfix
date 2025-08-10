@@ -1,0 +1,7 @@
+
+NOTICE
+======
+This is a derivative work of the community "weather-chart-card".
+Original authors retain all copyrights.
+This fork republishes the card under the same license to enable per-location sunrise/sunset
+via `sunrise_entity` / `sunset_entity` configuration.
