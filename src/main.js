@@ -137,7 +137,33 @@ setConfig(config) {
 set hass(hass) {
   this._hass = hass;
   this.language = this.config.locale || hass.selectedLanguage || hass.language;
-  this.sun = 'sun.sun' in hass.states ? hass.states['sun.sun'] : null;
+
+  // Prefer user-provided sunrise/sunset sensors over sun.sun
+  const sunriseEntityId = this.config.sunrise_entity;
+  const sunsetEntityId = this.config.sunset_entity;
+  const sunriseState = sunriseEntityId ? hass.states[sunriseEntityId] : undefined;
+  const sunsetState = sunsetEntityId ? hass.states[sunsetEntityId] : undefined;
+
+  if (
+    sunriseState &&
+    sunsetState &&
+    sunriseState.state !== 'unknown' &&
+    sunsetState.state !== 'unknown'
+  ) {
+    const now = new Date();
+    const sunrise = new Date(sunriseState.state);
+    const sunset = new Date(sunsetState.state);
+    const state = now > sunrise && now < sunset ? 'above_horizon' : 'below_horizon';
+    this.sun = {
+      state,
+      attributes: {
+        next_rising: sunriseState.state,
+        next_setting: sunsetState.state,
+      },
+    };
+  } else {
+    this.sun = 'sun.sun' in hass.states ? hass.states['sun.sun'] : null;
+  }
   this.unitSpeed = this.config.units.speed ? this.config.units.speed : this.weather && this.weather.attributes.wind_speed_unit;
   this.unitPressure = this.config.units.pressure ? this.config.units.pressure : this.weather && this.weather.attributes.pressure_unit;
   this.unitVisibility = this.config.units.visibility ? this.config.units.visibility : this.weather && this.weather.attributes.visibility_unit;
@@ -440,7 +466,7 @@ autoscroll() {
     this.autoscrollTimeout = setTimeout(() => {
       this.autoscrollTimeout = null;
       this.updateChart();
-      drawChartOncePerHour();
+      updateChartOncePerHour();
     }, nextHour - now);
   };
 
