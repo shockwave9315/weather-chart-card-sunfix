@@ -440,7 +440,7 @@ autoscroll() {
     this.autoscrollTimeout = setTimeout(() => {
       this.autoscrollTimeout = null;
       this.updateChart();
-      drawChartOncePerHour();
+      updateChartOncePerHour();
     }, nextHour - now);
   };
 
