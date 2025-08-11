@@ -875,6 +875,8 @@ const ALT_SCHEMA = [
   { name: "dew_point", title: "Alternative dew pointsensor", selector: { entity: { domain: 'sensor' } } },
   { name: "wind_gust_speed", title: "Alternative wind gust speed sensor", selector: { entity: { domain: 'sensor' } } },
   { name: "visibility", title: "Alternative visibility sensor", selector: { entity: { domain: 'sensor' } } },
+  { name: "sunrise_entity", title: "Alternative sunrise sensor", selector: { entity: { domain: 'sensor' } } },
+  { name: "sunset_entity", title: "Alternative sunset sensor", selector: { entity: { domain: 'sensor' } } },
 ];
 
 class WeatherChartCardEditor extends s {
@@ -18075,13 +18077,45 @@ setConfig(config) {
 set hass(hass) {
   this._hass = hass;
   this.language = this.config.locale || hass.selectedLanguage || hass.language;
-  this.sun = 'sun.sun' in hass.states ? hass.states['sun.sun'] : null;
-  this.unitSpeed = this.config.units.speed ? this.config.units.speed : this.weather && this.weather.attributes.wind_speed_unit;
-  this.unitPressure = this.config.units.pressure ? this.config.units.pressure : this.weather && this.weather.attributes.pressure_unit;
-  this.unitVisibility = this.config.units.visibility ? this.config.units.visibility : this.weather && this.weather.attributes.visibility_unit;
+
   this.weather = this.config.entity in hass.states
     ? hass.states[this.config.entity]
     : null;
+
+  const sunEntity = 'sun.sun' in hass.states ? hass.states['sun.sun'] : null;
+  let sunrise = this.weather && this.weather.attributes ? this.weather.attributes.sunrise : undefined;
+  let sunset = this.weather && this.weather.attributes ? this.weather.attributes.sunset : undefined;
+
+  sunrise = sunrise || (sunEntity && sunEntity.attributes.next_rising);
+  sunset = sunset || (sunEntity && sunEntity.attributes.next_setting);
+
+  if (this.config.sunrise_entity && hass.states[this.config.sunrise_entity]) {
+    const srEnt = hass.states[this.config.sunrise_entity];
+    if (srEnt && !['unknown', 'unavailable'].includes(srEnt.state)) {
+      sunrise = srEnt.attributes && srEnt.attributes.next_rising ? srEnt.attributes.next_rising : srEnt.state;
+    }
+  }
+
+  if (this.config.sunset_entity && hass.states[this.config.sunset_entity]) {
+    const ssEnt = hass.states[this.config.sunset_entity];
+    if (ssEnt && !['unknown', 'unavailable'].includes(ssEnt.state)) {
+      sunset = ssEnt.attributes && ssEnt.attributes.next_setting ? ssEnt.attributes.next_setting : ssEnt.state;
+    }
+  }
+
+  if (sunEntity || sunrise || sunset) {
+    const base = sunEntity || { state: 'above_horizon', attributes: {} };
+    this.sun = {
+      ...base,
+      attributes: { ...base.attributes, next_rising: sunrise, next_setting: sunset },
+    };
+  } else {
+    this.sun = null;
+  }
+
+  this.unitSpeed = this.config.units.speed ? this.config.units.speed : this.weather && this.weather.attributes.wind_speed_unit;
+  this.unitPressure = this.config.units.pressure ? this.config.units.pressure : this.weather && this.weather.attributes.pressure_unit;
+  this.unitVisibility = this.config.units.visibility ? this.config.units.visibility : this.weather && this.weather.attributes.visibility_unit;
 
   if (this.weather) {
     this.temperature = this.config.temp ? hass.states[this.config.temp].state : this.weather.attributes.temperature;

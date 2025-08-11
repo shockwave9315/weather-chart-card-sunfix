@@ -12,6 +12,8 @@ const ALT_SCHEMA = [
   { name: "dew_point", title: "Alternative dew pointsensor", selector: { entity: { domain: 'sensor' } } },
   { name: "wind_gust_speed", title: "Alternative wind gust speed sensor", selector: { entity: { domain: 'sensor' } } },
   { name: "visibility", title: "Alternative visibility sensor", selector: { entity: { domain: 'sensor' } } },
+  { name: "sunrise_entity", title: "Alternative sunrise sensor", selector: { entity: { domain: 'sensor' } } },
+  { name: "sunset_entity", title: "Alternative sunset sensor", selector: { entity: { domain: 'sensor' } } },
 ];
 
 class WeatherChartCardEditor extends LitElement {
